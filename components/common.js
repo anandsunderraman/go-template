@@ -14,18 +14,18 @@ export function GetProtocolFlags(asyncapi) {
     hasAMQP: false
   };
 
-  const channelEntries = Object.keys(asyncapi.channels()).length ? Object.entries(asyncapi.channels()) : [];
-  //if there are no channels do nothing
-  if (channelEntries.length === 0) {
-    return protocolFlags;
-  }
-
-  //if there are no amqp publisher or subscribers do nothing
-  const hasAMQP = channelEntries.filter(([channelName, channel]) => {
-    return (channel.hasPublish() || channel.hasSubscribe) && channel.bindings().amqp;
-  }).length > 0;
-
-  protocolFlags.hasAMQP = hasAMQP;
+  //loop through the operations
+  //for each channel in the operation
+  //check if protocol is one of the supported protocols
+  asyncapi.operations().forEach(op => {
+    op.channels().forEach(ch => {
+      ch.bindings().forEach(b => {
+        if (b.protocol() === 'amqp') {
+          protocolFlags.hasAMQP = true;
+        }
+      });
+    });
+  });
 
   return protocolFlags;
 }

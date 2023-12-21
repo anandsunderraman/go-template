@@ -1,34 +1,24 @@
-asyncapi: '2.3.0'
-
+asyncapi: 3.0.0
 info:
-  title: Streetlights API
+  title: Streetlights App
   version: '1.0.0'
   description: |
-    The Smartylighting Streetlights API allows you
+    The Smartylighting Streetlights application allows you
     to remotely manage the city lights.
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
-
-defaultContentType: application/json
-
 servers:
-  local:
-    url: localhost:5672
+  rabbitmqLocal:
+    host: localhost:5672
     protocol: amqp
-    security:
-      - user-password: []
-
 channels:
-  light/measured:
-    publish:
-      summary: Inform about environmental lighting conditions for a particular streetlight.
-      operationId: onLightMeasured
-      message:
+  lightMeasured:
+    address: 'light/measured'
+    messages:
+      lightMeasuredMessage:
         name: LightMeasured
         payload:
-          $id: LightMeasured
-          additionalProperties: false
           type: object
           properties:
             id:
@@ -43,8 +33,16 @@ channels:
               type: string
               format: date-time
               description: Date and time when the message was sent.
-
-components:
-  securitySchemes:
-    user-password:
-      type: userPassword
+    servers:
+      - $ref: "#/servers/rabbitmqLocal"
+    bindings:
+      amqp:
+        is: queue
+        queue:
+          name: light/measured
+operations:
+  onLightMeasured:
+    action: receive
+    summary: Information about environmental lighting conditions for a particular streetlight.
+    channel:
+      $ref: '#/channels/lightMeasured'

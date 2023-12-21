@@ -1,32 +1,37 @@
 import { GetProtocolFlags, GetPublisherFlags, GetSubscriberFlags, pascalCase, hasPubOrSub } from '../../components/common';
-import parser from '@asyncapi/parser'
+import { Parser, fromFile } from '@asyncapi/parser'
 import fs from 'fs'
 import path from 'path'
 
-const docWithoutProtocols = fs.readFileSync(path.resolve(__dirname, '../files/docWithoutProtocols.yml'), 'utf8');
+const parser = new Parser();
+const docWithoutOperations = fs.readFileSync(path.resolve(__dirname, '../files/docWithoutOperations.yml'), 'utf8');
 const docWithAMQPublisher = fs.readFileSync(path.resolve(__dirname, '../files/docWithAMQPublisher.yml'), 'utf8');
 const docWithAMQPSubscriber = fs.readFileSync(path.resolve(__dirname, '../files/docWithAMQPSubscriber.yml'), 'utf8');
 const docWithoutAMQPublisher = fs.readFileSync(path.resolve(__dirname, '../files/docWithoutAMQPublisher.yml'), 'utf8');
 
 describe('GetProtocolFlags', () => {
 
-  it('should return protocols as false when no channels are present ', async function() {
+  it('should return protocols as false when no operations are present ', async function() {
     const expected = {
       hasAMQP: false
     };
 
-    const doc = await parser.parse(docWithoutProtocols);
-    const result = GetProtocolFlags(doc);
+    const { document, diagnostics } = await parser.parse(docWithoutOperations);
+    expect(diagnostics).toHaveLength(0);
+
+    const result = GetProtocolFlags(document);
     expect(result).toEqual(expected);
   })
 
-  it('should return amqp as true when channels with amqp bindings are present ', async function() {
+  it('should return protocols as true when operations are present', async function() {
     const expected = {
       hasAMQP: true
     };
 
-    const doc = await parser.parse(docWithoutAMQPublisher);
-    const result = GetProtocolFlags(doc);
+    const { document, diagnostics } = await parser.parse(docWithAMQPSubscriber);
+    expect(diagnostics).toHaveLength(0);
+
+    const result = GetProtocolFlags(document);
     expect(result).toEqual(expected);
   })
 
@@ -38,7 +43,7 @@ describe('GetSubscriberFlags', () => {
       hasAMQPSub: false
     };
 
-    const doc = await parser.parse(docWithoutProtocols);
+    const doc = await parser.parse(docWithoutOperations);
     const result = GetSubscriberFlags(doc);
     expect(result).toEqual(expected);
   })
@@ -78,7 +83,7 @@ describe('GetPublisherFlags', () => {
       hasAMQPPub: false
     };
 
-    const doc = await parser.parse(docWithoutProtocols);
+    const doc = await parser.parse(docWithoutOperations);
     const result = GetPublisherFlags(doc);
     expect(result).toEqual(expected);
   })
@@ -97,7 +102,7 @@ describe('hasPubOrSub', () => {
 
   it('should return false when no channels are present ', async function() {
     const expected = false
-    const doc = await parser.parse(docWithoutProtocols);
+    const doc = await parser.parse(docWithoutOperations);
     const result = hasPubOrSub(doc);
     expect(result).toEqual(expected);
   })

@@ -35,7 +35,8 @@
     "@asyncapi/generator-filters": "^2.0.0",
     "@asyncapi/generator-hooks": "^0.1.0",
     "@asyncapi/generator-react-sdk": "^0.2.23",
-    "@asyncapi/modelina": "^2.0.13"
+    "@asyncapi/modelina": "^2.0.13",
+    "@asyncapi/parser": "^3.0.2"
   },
   "release": {
     "branches": [
@@ -77,6 +78,7 @@
     "@semantic-release/github": "^7.0.7",
     "@semantic-release/npm": "^7.0.5",
     "@semantic-release/release-notes-generator": "^9.0.1",
+    "ajv": "^8.0.5",
     "all-contributors-cli": "^6.19.0",
     "conventional-changelog-conventionalcommits": "^4.4.0",
     "eslint": "^6.8.0",
@@ -84,7 +86,8 @@
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-sonarjs": "^0.5.0",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
+    "jest-esm-transformer": "^1.0.0",
     "markdown-toc": "^1.2.0",
     "semantic-release": "^17.1.1"
   },
@@ -105,5 +108,16 @@
         }
       ]
     ]
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "jsx"
+    ],
+    "moduleNameMapper": {
+      "^nimma/legacy$": "<rootDir>/node_modules/nimma/dist/legacy/cjs/index.js",
+      "^nimma/(.*)": "<rootDir>/node_modules/nimma/dist/cjs/$1"
+    }
   }
 }

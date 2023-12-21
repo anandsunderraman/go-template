@@ -40,9 +40,5 @@ channels:
         is: queue
         queue:
           name: light/measured
-operations:
-  onLightMeasured:
-    action: receive
-    summary: Information about environmental lighting conditions for a particular streetlight.
-    channel:
-      $ref: '#/channels/lightMeasured'
+
+

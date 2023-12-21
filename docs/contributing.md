@@ -55,5 +55,11 @@ This generates `go` code to the dir `output` based on the asyncapi sample file [
 Once the `go` code is generated, one can navigate to the `output` directory and run `go run main.go` to test the generated code.
 Importantly one must have the appropriate broker or messaging software running locally to be able to test it successfully
 
+## Jest testing
+
+```
+jest -t 'GetProtocolFlags' ./test/components
+```
+
 
 
