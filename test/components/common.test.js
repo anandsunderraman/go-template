@@ -1,4 +1,4 @@
-import { GetProtocolFlags, GetPublisherFlags, GetSubscriberFlags, pascalCase, hasPubOrSub } from '../../components/common';
+import { GetRenderFlags, GetProtocolFlags, GetPublisherFlags, GetSubscriberFlags, pascalCase, hasPubOrSub } from '../../components/common';
 import { Parser, fromFile } from '@asyncapi/parser'
 import fs from 'fs'
 import path from 'path'
@@ -35,6 +35,28 @@ describe('GetProtocolFlags', () => {
     expect(result).toEqual(expected);
   })
 
+})
+
+describe('GetRenderFlags', () => {
+  it('should return the renderFlags object from a valid async api document',async function() {
+
+    const { document, diagnostics } = await parser.parse(docWithAMQPublisher);
+    expect(diagnostics).toHaveLength(0);
+
+    const result = GetRenderFlags(document);
+
+    var operations = result.amqp.send
+    expect(operations).toHaveLength(1);
+
+    //assert channel binding has amqp
+    var channels = operations[0].channels();
+    expect(channels).toHaveLength(1);
+
+    //assert channel to have amqp binding
+    var protocol = channels[0].bindings()[0].protocol();
+    expect(protocol).toEqual("amqp");
+
+  })
 })
 
 describe('GetSubscriberFlags', () => {

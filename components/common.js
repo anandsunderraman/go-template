@@ -30,6 +30,32 @@ export function GetProtocolFlags(asyncapi) {
   return protocolFlags;
 }
 
+
+export function GetRenderFlags(asyncapi) {
+  const supportedProtocols = ["amqp"];
+
+  const renderFlags = {
+    amqp: {
+      receive: [],
+      send: []
+    }
+  }
+
+  asyncapi.operations().forEach(op => {
+    op.channels().forEach(ch => {
+      ch.bindings().forEach(b => {
+        const protocol = b.protocol()
+        if (supportedProtocols.includes(protocol)) {
+          const action = op.action()
+          renderFlags[protocol][action].push(op)
+        }
+      });
+    });
+  });
+
+  return renderFlags
+}
+
 /**
  * Input: parsed asyncapi object
  * Output: object which indicates what protocols have subscribers

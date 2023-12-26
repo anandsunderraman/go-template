@@ -1,44 +1,24 @@
-asyncapi: '2.3.0'
-
+asyncapi: 3.0.0
 info:
-  title: Streetlights API
+  title: Streetlights App
   version: '1.0.0'
   description: |
-    The Smartylighting Streetlights API allows you
+    The Smartylighting Streetlights application allows you
     to remotely manage the city lights.
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
-
-defaultContentType: application/json
-
 servers:
-  local:
-    url: localhost:5672
+  rabbitmqLocal:
+    host: localhost:5672
     protocol: amqp
-    security:
-      - user-password: []
-
 channels:
-  light/measured:
-    bindings:
-      amqp:
-        is: routingKey
-        queue:
-          name: light/measured
-          durable: true
-          exclusive: true
-          autoDelete: false
-          vhost: /
-        bindingVersion: 0.2.0
-    publish:
-      summary: Inform about environmental lighting conditions for a particular streetlight.
-      operationId: onLightMeasured
-      message:
+  lightMeasured:
+    address: 'light/measured'
+    messages:
+      lightMeasuredMessage:
         name: LightMeasured
         payload:
-          $id: LightMeasured
-          additionalProperties: false
           type: object
           properties:
             id:
@@ -53,32 +33,16 @@ channels:
               type: string
               format: date-time
               description: Date and time when the message was sent.
-  temp/measured:
+    servers:
+      - $ref: "#/servers/rabbitmqLocal"
     bindings:
       amqp:
-        is: routingKey
+        is: queue
         queue:
-          name: temp/measured
-          durable: true
-          exclusive: true
-          autoDelete: false
-          vhost: /
-        bindingVersion: 0.2.0
-    publish:
-      operationId: onTempMeasured
-      message:
-        name: TempMeasured
-        payload:
-          $id: TempMeasured
-          additionalProperties: false
-          type: object
-          properties:
-            temp:
-              type: integer
-              minimum: 0
-
-
-components:
-  securitySchemes:
-    user-password:
-      type: userPassword
+          name: light/measured
+operations:
+  publishLightMeasured:
+    action: send
+    summary: Information about environmental lighting conditions for a particular streetlight.
+    channel:
+      $ref: '#/channels/lightMeasured'
