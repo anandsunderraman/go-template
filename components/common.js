@@ -30,7 +30,23 @@ export function GetProtocolFlags(asyncapi) {
   return protocolFlags;
 }
 
-
+/**
+ * Reads the parsed async api object
+ * Populates an object called renderFlags
+ * which has
+ * a key for every protocol
+ * value is an object with 2 keys receive and send
+ * each is an array of operations that was parsed for the protocol from the async api object
+ * example
+ * renderFlags output =
+ * {
+ *    "amqp": {
+ *      "send": [{<op1Obj}, {op2Obj}],
+ *      "receive": [{<op3Obj}, {op4Obj}]
+ *    }
+ * }
+ * @param asyncapi
+ */
 export function GetRenderFlags(asyncapi) {
   const supportedProtocols = ["amqp"];
 
