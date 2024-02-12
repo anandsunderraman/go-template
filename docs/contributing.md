@@ -61,5 +61,11 @@ Importantly one must have the appropriate broker or messaging software running l
 jest -t 'GetProtocolFlags' ./test/components
 ```
 
+## Ignore husky
+
+```
+git commit --no-verify and git push --no-verify
+```
+
 
 

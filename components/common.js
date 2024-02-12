@@ -1,5 +1,9 @@
 const _ = require('lodash');
 
+//the assumption is that this variable will be used only once
+//during the initial attempt to generate the source code
+var cachedRenderFlags = null;
+
 /**
  * Input: parsed asyncapi object
  * Output: object which indicates what protocols are present in the async api document
@@ -47,8 +51,22 @@ export function GetProtocolFlags(asyncapi) {
  * }
  * @param asyncapi
  */
-export function GetRenderFlags(asyncapi) {
+export function GetRenderFlags(asyncapi, cached) {
+  //cached value indicated if we must use the cached version of renderFlags
+  var cached;
+
+  if (arguments.length === 1) {
+    cached = true
+  } else {
+    cached = arguments[1]
+  }
+
   const supportedProtocols = ["amqp"];
+
+  if (cachedRenderFlags != null) {
+    return cachedRenderFlags;
+  }
+
 
   const renderFlags = {
     amqp: {
@@ -69,7 +87,9 @@ export function GetRenderFlags(asyncapi) {
     });
   });
 
-  return renderFlags
+  cachedRenderFlags = renderFlags;
+
+  return cachedRenderFlags
 }
 
 /**
