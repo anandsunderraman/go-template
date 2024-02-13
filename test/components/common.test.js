@@ -37,6 +37,8 @@ describe('GetProtocolFlags', () => {
 
 })
 
+
+//TODO: write more unit tests for GetRenderFlags
 describe('GetRenderFlags', () => {
   it('should return the renderFlags object from a valid async api document',async function() {
 
@@ -55,6 +57,16 @@ describe('GetRenderFlags', () => {
     //assert channel to have amqp binding
     var protocol = channels[0].bindings()[0].protocol();
     expect(protocol).toEqual("amqp");
+
+  })
+
+  it('should return empty renderFlags object from a valid async api document with no supported protocols',async function() {
+
+    const { document, diagnostics } = await parser.parse(docWithoutOperations);
+    expect(diagnostics).toHaveLength(0);
+
+    const result = GetRenderFlags(document, false);
+    expect(JSON.stringify(result)).toBe('{}');
 
   })
 })

@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 //the assumption is that this variable will be used only once
 //during the initial attempt to generate the source code
-var cachedRenderFlags = null;
+let cachedRenderFlags = null;
 
 /**
  * Input: parsed asyncapi object
@@ -51,9 +51,9 @@ export function GetProtocolFlags(asyncapi) {
  * }
  * @param asyncapi
  */
-export function GetRenderFlags(asyncapi, cached) {
+export function GetRenderFlags(asyncapi) {
   //cached value indicated if we must use the cached version of renderFlags
-  var cached;
+  let cached;
 
   if (arguments.length === 1) {
     cached = true
@@ -63,17 +63,12 @@ export function GetRenderFlags(asyncapi, cached) {
 
   const supportedProtocols = ["amqp"];
 
-  if (cachedRenderFlags != null) {
+  if (cachedRenderFlags != null && cached) {
     return cachedRenderFlags;
   }
 
 
-  const renderFlags = {
-    amqp: {
-      receive: [],
-      send: []
-    }
-  }
+  let renderFlags = {}
 
   asyncapi.operations().forEach(op => {
     op.channels().forEach(ch => {
@@ -81,6 +76,12 @@ export function GetRenderFlags(asyncapi, cached) {
         const protocol = b.protocol()
         if (supportedProtocols.includes(protocol)) {
           const action = op.action()
+          if (renderFlags[protocol] === undefined) {
+            renderFlags[protocol] = {};
+          }
+          if (renderFlags[protocol][action] === undefined) {
+            renderFlags[protocol][action] = [];
+          }
           renderFlags[protocol][action].push(op)
         }
       });
@@ -150,6 +151,14 @@ export function GetPublisherFlags(asyncapi) {
   publisherFlags.hasAMQPPub = hasAMQPPub;
 
   return publisherFlags;
+}
+
+export function hasSupportedOperations(asyncapi) {
+   let renderFlags = GetRenderFlags(asyncapi);
+   if (renderFlags == null || Object.keys(renderFlags).length === 0) {
+     return false;
+   }
+   return true;
 }
 
 export function hasPubOrSub(asyncapi) {

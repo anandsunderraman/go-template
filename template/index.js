@@ -131,6 +131,8 @@ export default function({ asyncapi, params }) {
       AMQP Subscriber
       AMQP Publisher
   `;
+
+  //TODO: use hasSupportedOperations instead of hasPubOrSub
   //if there are no supported channels do nothing
   if (!hasPubOrSub(asyncapi)) {
     console.log(`${informativeErrMsg}`);
