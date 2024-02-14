@@ -1,4 +1,4 @@
-import { GetRenderFlags, GetProtocolFlags, GetPublisherFlags, GetSubscriberFlags, pascalCase, hasPubOrSub } from '../../components/common';
+import { GetRenderFlags, GetProtocolFlags, GetPublisherFlags, GetSubscriberFlags, pascalCase, hasPubOrSub, hasSupportedOperations } from '../../components/common';
 import { Parser, fromFile } from '@asyncapi/parser'
 import fs from 'fs'
 import path from 'path'
@@ -37,8 +37,6 @@ describe('GetProtocolFlags', () => {
 
 })
 
-
-//TODO: write more unit tests for GetRenderFlags
 describe('GetRenderFlags', () => {
   it('should return the renderFlags object from a valid async api document',async function() {
 
@@ -153,5 +151,22 @@ describe('hasPubOrSub', () => {
     const doc = await parser.parse(docWithAMQPublisher);
     const result = hasPubOrSub(doc);
     expect(result).toEqual(expected);
+  })
+})
+
+describe('hasSupportedOperations', () => {
+  it('should return false supported operations are not present ', function() {
+    expect(hasSupportedOperations(null)).toEqual(false);
+    expect(hasSupportedOperations({})).toEqual(false);
+  })
+
+  it('should return true when supported operations are present ', function() {
+    let renderFlags = {
+      amqp: {
+        send: [],
+        receive: []
+      }
+    }
+    expect(hasSupportedOperations(renderFlags)).toEqual(true);
   })
 })

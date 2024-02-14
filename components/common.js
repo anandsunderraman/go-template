@@ -67,7 +67,6 @@ export function GetRenderFlags(asyncapi) {
     return cachedRenderFlags;
   }
 
-
   let renderFlags = {}
 
   asyncapi.operations().forEach(op => {
@@ -89,7 +88,6 @@ export function GetRenderFlags(asyncapi) {
   });
 
   cachedRenderFlags = renderFlags;
-
   return cachedRenderFlags
 }
 
@@ -153,8 +151,7 @@ export function GetPublisherFlags(asyncapi) {
   return publisherFlags;
 }
 
-export function hasSupportedOperations(asyncapi) {
-   let renderFlags = GetRenderFlags(asyncapi);
+export function hasSupportedOperations(renderFlags) {
    if (renderFlags == null || Object.keys(renderFlags).length === 0) {
      return false;
    }
